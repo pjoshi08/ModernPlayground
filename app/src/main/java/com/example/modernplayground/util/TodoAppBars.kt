@@ -86,7 +86,8 @@ private fun MoreTasksMenu(
     TopAppBarDropdownMenu(
         iconContent = {
             Icon(Icons.Filled.MoreVert, stringResource(id = R.string.menu_more))
-        }) { closeMenu ->
+        }
+    ) { closeMenu ->
         DropdownMenuItem(onClick = { onClearCompletedTasks(); closeMenu() }) {
             Text(text = stringResource(id = R.string.menu_clear))
         }
@@ -104,7 +105,7 @@ private fun TopAppBarDropdownMenu(
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
-        IconButton(onClick = { expanded != expanded }) {
+        IconButton(onClick = { expanded = !expanded }) {
             iconContent()
         }
         DropdownMenu(
@@ -112,7 +113,7 @@ private fun TopAppBarDropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier.wrapContentSize(Alignment.TopEnd)
         ) {
-            content { expanded != expanded }
+            content { expanded = !expanded }
         }
     }
 }

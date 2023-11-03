@@ -7,6 +7,7 @@ import com.example.modernplayground.ADD_EDIT_RESULT_OK
 import com.example.modernplayground.DELETE_RESULT_OK
 import com.example.modernplayground.EDIT_RESULT_OK
 import com.example.modernplayground.R
+import com.example.modernplayground.data.DefaultTaskRepository
 import com.example.modernplayground.data.Task
 import com.example.modernplayground.util.Async
 import com.example.modernplayground.util.WhileUiSubscribed
@@ -36,10 +37,11 @@ data class TasksUiState(
 @HiltViewModel
 class TasksViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    // TODO: private val taskRepository: DefaultTaskRepository
+    private val taskRepository: DefaultTaskRepository
 ) : ViewModel() {
 
-    private val tasksStream = flow<List<Task>> { emptyList<Task>() }
+    //private val tasksStream = flow<List<Task>> { emptyList<Task>() }
+    private val tasksStream = taskRepository.observeAll()
 
     private val _savedFilterType = savedStateHandle
         .getStateFlow(TASKS_FILTER_SAVED_STATE_KEY, ALL_TASKS)
@@ -94,11 +96,13 @@ class TasksViewModel @Inject constructor(
     }
 
     fun completeTask(task: Task, completed: Boolean) {
-        if (completed) {
-            // TODO: taskRepository.completeTask(task.id)
-            showSnackBarMessage(R.string.task_marked_complete)
-        } else {
-            showSnackBarMessage(R.string.task_marked_active)
+        viewModelScope.launch {
+            if (completed) {
+                taskRepository.complete(task.id)
+                showSnackBarMessage(R.string.task_marked_complete)
+            } else {
+                showSnackBarMessage(R.string.task_marked_active)
+            }
         }
     }
 
@@ -121,7 +125,7 @@ class TasksViewModel @Inject constructor(
     fun refresh() {
         _isLoading.value = true
         viewModelScope.launch {
-            // TODO: taskRepository.refresh()
+            taskRepository.refresh()
             _isLoading.value = false
         }
     }

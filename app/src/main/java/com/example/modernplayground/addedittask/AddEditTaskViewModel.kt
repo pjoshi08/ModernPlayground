@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.modernplayground.R
 import com.example.modernplayground.TodoDestinationArgs
+import com.example.modernplayground.data.DefaultTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +27,7 @@ data class AddEditTaskUiState(
 
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
-    //private val taskRepository: TaskRepository,
+    private val taskRepository: DefaultTaskRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -69,7 +70,7 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     private fun createNewTask() = viewModelScope.launch {
-        // TODO: taskRepository.createTask(uiState.value.title, uiState.value.description)
+        taskRepository.create(uiState.value.title, uiState.value.description)
         _uiState.update { it.copy(isTaskSaved = true) }
     }
 

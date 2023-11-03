@@ -2,6 +2,7 @@ package com.example.modernplayground.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.modernplayground.data.source.local.TaskDao
 import com.example.modernplayground.data.source.local.TodoDatabase
 import dagger.Module
 import dagger.Provides
@@ -23,4 +24,7 @@ object DatabaseModule {
             "Tasks.db"
         ).build()
     }
+
+    @Provides
+    fun provideTaskDao(database: TodoDatabase): TaskDao = database.taskDao()
 }
