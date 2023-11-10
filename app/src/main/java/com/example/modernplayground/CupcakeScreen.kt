@@ -75,6 +75,17 @@ fun CupcakeAppBar(
     )
 }
 
+/**
+ * The Navigation component has three main parts:
+ *
+ * [NavController]: Responsible for navigating between destinations—that is, the screens in your app.
+ * [NavGraph]: Maps composable destinations to navigate to.
+ * [NavHost]: Composable acting as a container for displaying the current destination of the NavGraph.
+ *
+ * In this codelab, you'll focus on the NavController and the NavHost. Within the NavHost,
+ * you'll define the destinations for the Cupcake app's NavGraph.
+ *
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CupcakeApp(
@@ -110,9 +121,9 @@ fun CupcakeApp(
                         viewModel.setQuantity(it)
                         navController.navigate(CupcakeScreen.Flavor.name)
                     },
-                    modifier = Modifier
+                    /*modifier = Modifier
                         .fillMaxSize()
-                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .padding(dimensionResource(R.dimen.padding_medium))*/
                 )
             }
             composable(route = CupcakeScreen.Flavor.name) {

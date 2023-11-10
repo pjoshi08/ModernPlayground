@@ -25,3 +25,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+/**
+ * Next Steps:
+ * Nav with compose: https://developer.android.com/jetpack/compose/navigation
+ * Principles: https://developer.android.com/guide/navigation/principles
+ * codelab: https://developer.android.com/codelabs/jetpack-compose-navigation#0
+ * Nav Material Desing: https://m2.material.io/design/navigation/understanding-navigation.html
+ */
