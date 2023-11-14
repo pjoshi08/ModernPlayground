@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
-class TaskNetworkDataSource @Inject constructor() {
+class TaskNetworkDataSource @Inject constructor() : NetworkDataSource {
     // A mutex is used to ensure that reads and writes are thread-safe
     private val accessMutex = Mutex()
     private var tasks = listOf(
@@ -21,12 +21,12 @@ class TaskNetworkDataSource @Inject constructor() {
         )
     )
 
-    suspend fun loadTasks(): List<NetworkTask> = accessMutex.withLock {
+    override suspend fun loadTasks(): List<NetworkTask> = accessMutex.withLock {
         delay(SERVICE_LATENCY_IN_MILLIS)
         return tasks
     }
 
-    suspend fun saveTasks(newTasks: List<NetworkTask>) = accessMutex.withLock {
+    override suspend fun saveTasks(newTasks: List<NetworkTask>) = accessMutex.withLock {
         delay(SERVICE_LATENCY_IN_MILLIS)
         tasks = newTasks
     }

@@ -20,6 +20,8 @@ import com.example.modernplayground.TodoDestinationArgs.TASK_ID_ARG
 import com.example.modernplayground.TodoDestinationArgs.TITLE_ARG
 import com.example.modernplayground.TodoDestinationArgs.USER_MESSAGE_ARG
 import com.example.modernplayground.addedittask.AddEditTaskScreen
+import com.example.modernplayground.statistics.StatisticsScreen
+import com.example.modernplayground.taskdetail.TaskDetailScreen
 import com.example.modernplayground.tasks.TasksScreen
 import com.example.modernplayground.util.AppModalDrawer
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +62,11 @@ fun TodoNavGraph(
                 )
             }
         }
+        composable(TodoDestinations.STATISTICS_ROUTE) {
+            AppModalDrawer(drawerState, currentRoute, navActions) {
+                StatisticsScreen(openDrawer = { coroutineScope.launch { drawerState.open() } })
+            }
+        }
         composable(
             TodoDestinations.ADD_EDIT_TASK_ROUTE,
             arguments = listOf(
@@ -76,6 +83,15 @@ fun TodoNavGraph(
                     )
                 },
                 onBack = { navController.popBackStack() }
+            )
+        }
+        composable(TodoDestinations.TASK_DETAIL_ROUTE) {
+            TaskDetailScreen(
+                onEditTask = { taskId ->
+                             navActions.navigateToAddEditTask(R.string.edit_task, taskId)
+                },
+                onBack = { navController.popBackStack() },
+                onDeleteTask = { navActions.navigateToTasks(DELETE_RESULT_OK) }
             )
         }
     }

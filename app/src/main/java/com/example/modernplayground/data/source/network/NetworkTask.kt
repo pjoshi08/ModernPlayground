@@ -14,21 +14,3 @@ data class NetworkTask(
         COMPLETE
     }
 }
-
-fun NetworkTask.toLocal() = LocalTask(
-    id = id,
-    title = title,
-    description = shortDescription,
-    isCompleted = (status == NetworkTask.TaskStatus.COMPLETE)
-)
-
-fun List<NetworkTask>.toLocal() = map(NetworkTask::toLocal)
-
-fun LocalTask.toNetwork() = NetworkTask(
-    id = id,
-    title = title,
-    shortDescription = description,
-    status = if (isCompleted) { NetworkTask.TaskStatus.COMPLETE } else { NetworkTask.TaskStatus.ACTIVE }
-)
-
-fun List<LocalTask>.toNetwork() = map(LocalTask::toNetwork)
