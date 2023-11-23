@@ -111,6 +111,7 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation(libs.androidx.google.material)
 
     // Hilt
     implementation(libs.hilt.android.core)
@@ -127,6 +128,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.material.core)
+    implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
