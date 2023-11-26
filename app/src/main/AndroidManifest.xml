@@ -19,7 +19,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- Note that you don't need to declare the account_type argument in the
+                 AndroidManifest. This will be appended later inside the NavHost composable
+                 function. -->
+                <data android:scheme="rally" android:host="single_account"/>
+            </intent-filter>
         </activity>
     </application>
 
