@@ -31,6 +31,8 @@ import com.example.modernplayground.ui.theme.RallyTheme
 /**
  * This Activity recreates part of the Rally Material Study from
  * https://material.io/design/material-studies/rally.html
+ *
+ * Codelab: https://developer.android.com/codelabs/jetpack-compose-navigation#0
  */
 class RallyActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
