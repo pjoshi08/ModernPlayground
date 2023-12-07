@@ -54,4 +54,6 @@
     <string name="no_tasks_image_content_description">No tasks image</string>
     <string name="title_activity_tasks_screen">TasksScreen</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="show_less">Show less</string>
+    <string name="show_more">Show more</string>
 </resources>
