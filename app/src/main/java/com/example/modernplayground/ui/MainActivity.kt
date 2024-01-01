@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.modernplayground.data.LocalEmailsDataProvider
+import com.example.modernplayground.ui.theme.AppTheme
 import com.google.accompanist.appcompattheme.AppCompatTheme
 
 class MainActivity : ComponentActivity() {
@@ -46,7 +47,9 @@ class MainActivity : ComponentActivity() {
 )
 @Composable
 fun ReplyAppPreviewLight() {
-    ReplyApp(
-        replyHomeUIState = ReplyHomeUIState(emails = LocalEmailsDataProvider.allEmails)
-    )
+    AppTheme {
+        ReplyApp(
+            replyHomeUIState = ReplyHomeUIState(emails = LocalEmailsDataProvider.allEmails)
+        )
+    }
 }

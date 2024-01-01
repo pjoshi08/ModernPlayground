@@ -34,8 +34,12 @@ fun ReplyEmailThreadItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .padding(8.dp)
+            .background(
+                colorScheme.background,
+                shapes.medium
+            )
             .padding(16.dp)
-            .padding(20.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             ReplyProfileImage(
@@ -50,9 +54,11 @@ fun ReplyEmailThreadItem(
             ) {
                 Text(
                     text = email.sender.firstName,
+                    style = typography.labelMedium
                 )
                 Text(
                     text = stringResource(id = R.string.twenty_mins_ago),
+                    style = typography.labelMedium
                 )
             }
             IconButton(
@@ -63,18 +69,21 @@ fun ReplyEmailThreadItem(
                 Icon(
                     imageVector = if (email.isStarred) Icons.Default.Star else Icons.Default.StarBorder,
                     contentDescription = stringResource(id = R.string.description_favorite),
-                    tint = if (email.isStarred) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outline
+                    tint = if (email.isStarred) colorScheme.secondary else colorScheme.outline
                 )
             }
         }
 
         Text(
             text = email.subject,
+            style = typography.bodyMedium,
             modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
         )
 
         Text(
             text = email.body,
+            style = typography.bodyLarge,
+            color = colorScheme.onSurfaceVariant
         )
         Row(
             modifier = Modifier
