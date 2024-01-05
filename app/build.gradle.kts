@@ -98,6 +98,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.timber)
     implementation(libs.androidx.test.espresso.idling.resources)
+    implementation(libs.androidx.core.ktx)
 
     // Architecture Components
     implementation(libs.room.runtime)
