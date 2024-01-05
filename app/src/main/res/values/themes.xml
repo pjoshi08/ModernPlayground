@@ -2,6 +2,6 @@
 <resources>
 
     <style name="Theme.ModernPlayground" parent="android:Theme.Material.Light.NoActionBar" />
-
+    <style name="Theme.Animation" parent="android:Theme.Material.NoActionBar" />
     <!-- <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar" /> -->
 </resources>
