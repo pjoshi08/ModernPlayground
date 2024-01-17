@@ -1,6 +1,25 @@
 package com.example.modernplayground.ui.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.calculateTargetValue
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -14,7 +33,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.WindowInsetsSides.Companion.Horizontal
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -94,6 +112,8 @@ import com.example.modernplayground.ui.Seashell
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 private enum class TabPage {
     Home, Work
@@ -149,8 +169,11 @@ fun Home() {
     val lazyListState = rememberLazyListState()
 
     // The background color. The value is changed by the current tab.
-    // TODO 1: Animate this color change.
-    val backgroundColor = if (tabPage == TabPage.Home) Seashell else GreenLight
+    // COMPLETED 1: Animate this color change.
+    val backgroundColor by animateColorAsState(
+        targetValue = if (tabPage == TabPage.Home) Seashell else GreenLight,
+        label = "background color"
+    )
 
     // The coroutine scope for event handlers calling suspend functions.
     val coroutineScope = rememberCoroutineScope()
@@ -174,11 +197,13 @@ fun Home() {
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.padding(
-            top = padding.calculateTopPadding(),
-            start = padding.calculateLeftPadding(LayoutDirection.Ltr),
-            end = padding.calculateEndPadding(LayoutDirection.Ltr)
-        )) {
+        Box(
+            modifier = Modifier.padding(
+                top = padding.calculateTopPadding(),
+                start = padding.calculateLeftPadding(LayoutDirection.Ltr),
+                end = padding.calculateEndPadding(LayoutDirection.Ltr)
+            )
+        ) {
             LazyColumn(
                 contentPadding = WindowInsets(
                     16.dp,
@@ -267,8 +292,8 @@ private fun HomeFloatingActionButton(
                 contentDescription = null
             )
             // Toggle the visibility of the content with animation.
-            // TODO 2-1: Animate this visibility change.
-            if (extended) {
+            // COMPLETED 2-1: Animate this visibility change.
+            AnimatedVisibility(extended) {
                 Text(
                     text = stringResource(R.string.edit),
                     modifier = Modifier
@@ -284,10 +309,35 @@ private fun HomeFloatingActionButton(
  */
 @Composable
 private fun EditMessage(shown: Boolean) {
-    // TODO 2-2: The message should slide down from the top on appearance and slide up on
+    // COMPLETED 2-2: The message should slide down from the top on appearance and slide up on
     //           disappearance.
     AnimatedVisibility(
-        visible = shown
+        visible = shown,
+        // For the enter transition: we can adjust the default behavior to use the entire height of
+        // the item to animate it properly by setting the initialOffsetY parameter. The
+        // initialOffsetY should be a lambda returning the initial position.
+        //
+        // The lambda receives one argument, the height of the element. To ensure that the item
+        // slides in from the top of the screen, we return its negative value since the top of
+        // the screen has the value of 0. We want the animation to start from -height to 0
+        // (its final resting position) so that it starts from above and animates in.
+        //
+        // When using slideInVertically, the target offset for after slide in is always 0 (pixel).
+        // initialOffsetY can be specified either as an absolute value or a percentage of the
+        // full height of the element via a lambda function.
+        //
+        // Similarly, slideOutVertically assumes the initial offset is 0, so only targetOffsetY
+        // needs to be specified.
+        enter = slideInVertically(
+            // Enters by sliding down from offset -fullHeight to 0
+            initialOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 150, easing = LinearOutSlowInEasing)
+        ),
+        exit = slideOutVertically(
+            // Exits by sliding up from offset 0 to -fullHeight
+            targetOffsetY = { fullHeight -> -fullHeight },
+            animationSpec = tween(durationMillis = 250, easing = FastOutLinearInEasing)
+        )
     ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -355,11 +405,13 @@ private fun TopicRow(topic: String, expanded: Boolean, onClick: () -> Unit) {
         shadowElevation = 2.dp,
         onClick = onClick
     ) {
-        // TODO 3: Animate the size change of the content.
+        // COMPLETED 3: Animate the size change of the content.
+        // Customizing Animations: https://developer.android.com/jetpack/compose/animation/introduction#customize-animations
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
+                .animateContentSize()
         ) {
             Row {
                 Icon(
@@ -416,7 +468,7 @@ private fun HomeTabBar(
             indicator = { tabPositions ->
                 HomeTabIndicator(tabPositions, tabPage)
             }
-        ){
+        ) {
             HomeTab(
                 icon = Icons.Default.Home,
                 title = stringResource(R.string.home),
@@ -442,10 +494,52 @@ private fun HomeTabIndicator(
     tabPositions: List<TabPosition>,
     tabPage: TabPage
 ) {
-    // TODO 4: Animate these value changes.
-    val indicatorLeft = tabPositions[tabPage.ordinal].left
-    val indicatorRight = tabPositions[tabPage.ordinal].right
-    val color = if (tabPage == TabPage.Home) PaleDogwood else Green
+    // COMPLETED 4: Animate these value changes.
+    // Transition API allows us to create more complex animations. Using the Transition API
+    // allows us to track when all animations on a Transition are finished, which is not possible
+    // when using individual animate*AsState APIs that we've seen previously. The Transition API
+    // also allows us to define different transitionSpec's when transitioning between different
+    // states.
+    val transition = updateTransition(targetState = tabPage, label = "Tab Indicator")
+    val indicatorLeft by transition.animateDp(
+        // transitionSpec parameter to customize the animation behavior. For example, we can
+        // achieve an elastic effect for the indicator by having the edge closer to the
+        // destination move faster than the other edge. We can use the isTransitioningTo
+        // infix function in transitionSpec lambdas to determine the direction of the state change.
+        transitionSpec = {
+            if (TabPage.Home isTransitioningTo TabPage.Work) {
+                // Indicator moves to the right.
+                // The left edge moves slower than the right edge
+                spring(stiffness = Spring.StiffnessVeryLow)
+            } else {
+                // Indicator moves to the left.
+                // The left edge moves faster than the right edge
+                spring(stiffness = Spring.StiffnessMedium)
+            }
+        },
+        label = "Indicator Left"
+    ) { page ->
+        tabPositions[page.ordinal].left
+    }
+    val indicatorRight by transition.animateDp(
+        transitionSpec = {
+            if (TabPage.Home isTransitioningTo TabPage.Work) {
+                // Indicator moves to the right
+                // The right edge moves faster than the left edge.
+                spring(stiffness = Spring.StiffnessMedium)
+            } else {
+                // Indicator moves to the left.
+                // The right edge moves slower than the left edge.
+                spring(stiffness = Spring.StiffnessVeryLow)
+            }
+        },
+        label = "Indicator Right"
+    ) { page ->
+        tabPositions[page.ordinal].right
+    }
+    val color by transition.animateColor(label = "Border Color") { page ->
+        if (page == TabPage.Home) PaleDogwood else Green
+    }
     Box(
         Modifier
             .fillMaxSize()
@@ -530,8 +624,37 @@ private fun WeatherRow(
  */
 @Composable
 private fun LoadingRow() {
-    // TODO 5: Animate this value between 0f and 1f, then back to 0f repeatedly.
-    val alpha = 1f
+    // COMPLETED 5: Animate this value between 0f and 1f, then back to 0f repeatedly.
+    // We'd like to make this value animate between 0f and 1f repeatedly. We can use
+    // InfiniteTransition for this purpose. This API is similar to the Transition API
+    // in the previous section. They both animate multiple values, but while Transition
+    // animates values based on state changes, InfiniteTransition animates values indefinitely.
+    val infiniteTransition = rememberInfiniteTransition()
+
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            // The keyFrames animation is another type of animationSpec (some others being tween
+            // and spring) that allows changes of the in-progress value at different millis.
+            // We initially set the durationMillis to 1000ms. Then we can define key frames in
+            // the animation, for example, at 500ms of the animation, we would like the alpha
+            // value to be 0.7f. This will change the animation progression: it'll progress
+            // quickly from 0 to 0.7 within 500ms of the animation, and from 0.7 to 1.0 from
+            // 500ms to 1000ms of the animation, slowing down towards the end.
+            animation = keyframes {
+                durationMillis = 1000
+                0.7f at 500
+            },
+            // The default repeatMode is RepeatMode.Restart . This transitions from initialValue
+            // to targetValue and starts again at the initialValue. By setting the repeatMode
+            // to RepeatMode.Reverse, the animation progresses from initialValue to targetValue
+            // and then from targetValue to initialValue. The animation progresses from 0 to 1
+            // then 1 to 0.
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "alpha"
+    )
     Row(
         modifier = Modifier
             .heightIn(min = 64.dp)
@@ -594,7 +717,8 @@ private fun TaskRow(task: String, onRemove: () -> Unit) {
 private fun Modifier.swipeToDismiss(
     onDismissed: () -> Unit
 ): Modifier = composed {
-    // TODO 6-1: Create an Animatable instance for the offset of the swiped element.
+    // COMPLETED 6-1: Create an Animatable instance for the offset of the swiped element.
+    val offsetX = remember { Animatable(0f) }
     pointerInput(Unit) {
         // Used to calculate a settling position of a fling animation.
         val decay = splineBasedDecay<Float>(this)
@@ -603,13 +727,23 @@ private fun Modifier.swipeToDismiss(
             while (true) {
                 // Wait for a touch down event.
                 val pointerId = awaitPointerEventScope { awaitFirstDown().id }
-                // TODO 6-2: Touch detected; the animation should be stopped.
+                // COMPLETED 6-2: Touch detected; the animation should be stopped.
+                offsetX.stop()
                 // Prepare for drag events and record velocity of a fling.
                 val velocityTracker = VelocityTracker()
                 // Wait for drag events.
                 awaitPointerEventScope {
                     horizontalDrag(pointerId) { change ->
-                        // TODO 6-3: Apply the drag change to the Animatable offset.
+                        // COMPLETED 6-3: Apply the drag change to the Animatable offset.
+                        // Get the drag amount change to offset the item with
+                        val horizontalDragOffset = offsetX.value + change.positionChange().x
+                        // Need to call this in a launch block in order to run it separately
+                        // outside of the awaitPointerEventScope
+                        launch {
+                            // Instantly se the Animatable to the dragOffset to ensure its moving
+                            // as the user's finger moves
+                            offsetX.snapTo(horizontalDragOffset)
+                        }
                         // Record the velocity of the drag.
                         velocityTracker.addPosition(change.uptimeMillis, change.position)
                         // Consume the gesture event, not passed to external
@@ -618,20 +752,34 @@ private fun Modifier.swipeToDismiss(
                 }
                 // Dragging finished. Calculate the velocity of the fling.
                 val velocity = velocityTracker.calculateVelocity().x
-                // TODO 6-4: Calculate the eventual position where the fling should settle
+                // COMPLETED 6-4: Calculate the eventual position where the fling should settle
                 //           based on the current offset value and velocity
-                // TODO 6-5: Set the upper and lower bounds so that the animation stops when it
+                val targetOffsetX = decay.calculateTargetValue(offsetX.value, velocity)
+                // COMPLETED 6-5: Set the upper and lower bounds so that the animation stops when it
                 //           reaches the edge.
+                offsetX.updateBounds(
+                    lowerBound = -size.width.toFloat(),
+                    upperBound = size.width.toFloat()
+                )
                 launch {
-                    // TODO 6-6: Slide back the element if the settling position does not go beyond
+                    // COMPLETED 6-6: Slide back the element if the settling position does not go beyond
                     //           the size of the element. Remove the element if it does.
+                    if (targetOffsetX.absoluteValue <= size.width) {
+                        // Not enough velocity; Slide back.
+                        offsetX.animateTo(targetValue = 0f, initialVelocity = velocity)
+                    } else {
+                        // Enough velocity to slide away the element to the edge.
+                        offsetX.animateDecay(velocity, decay)
+                        // The element was swiped away.
+                        onDismissed()
+                    }
                 }
             }
         }
     }
         .offset {
-            // TODO 6-7: Use the animating offset value here.
-            IntOffset(0, 0)
+            // COMPLETED 6-7: Use the animating offset value here.
+            IntOffset(offsetX.value.roundToInt(), 0)
         }
 }
 
