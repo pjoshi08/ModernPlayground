@@ -97,6 +97,9 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.timber)
+    implementation(libs.maps)
+    implementation(libs.maps.ktx)
+    implementation(libs.coil.kt.compose)
     implementation(libs.androidx.test.espresso.idling.resources)
 
     // Architecture Components
@@ -107,10 +110,12 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     ksp(libs.room.compiler)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation(libs.androidx.lifecycle.viewModel.ktx)
 
     // Hilt
     implementation(libs.hilt.android.core)
@@ -121,6 +126,7 @@ dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
 
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.compiler)
     implementation(composeBom)
     implementation(libs.androidx.compose.foundation.core)
@@ -184,4 +190,11 @@ dependencies {
     // AndroidX Test - Hilt testing
     androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.compiler)
+
+    constraints {
+        // Volley is a transitive dependency of maps
+        implementation(libs.volley) {
+            because("Only volley 1.2.0 or newer are available on maven.google.com")
+        }
+    }
 }
