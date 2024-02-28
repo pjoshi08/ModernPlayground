@@ -115,3 +115,11 @@ fun PeopleUserInputPreview() {
         PeopleUserInput(onPeopleChanged = {})
     }
 }
+
+@Preview
+@Composable
+fun FromDestinationInputPreview() {
+    CraneTheme {
+        FromDestination()
+    }
+}

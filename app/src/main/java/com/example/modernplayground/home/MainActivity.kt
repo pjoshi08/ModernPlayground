@@ -9,6 +9,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.example.modernplayground.details.launchDetailsActivity
 import com.example.modernplayground.ui.CraneTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CraneTheme {
                 MainScreen(onExploreItemClicked = {
-
+                    launchDetailsActivity(context = this, item = it)
                 })
             }
         }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.example.modernplayground.base.CraneDrawer
 import com.example.modernplayground.data.ExploreModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -65,8 +66,9 @@ fun CraneHomeContent(
     BackdropScaffold(
         modifier = modifier,
         scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
+        frontLayerScrimColor = Color.Unspecified,
         appBar = {
-                 HomeTabBar(openDrawer, tabSelected, onTabSelected = { tabSelected = it })
+            HomeTabBar(openDrawer, tabSelected, onTabSelected = { tabSelected = it })
         },
         backLayerContent = {
             SearchContent(tabSelected, viewModel, onPeopleChanged)
@@ -108,7 +110,8 @@ fun HomeTabBar(
 ) {
     CraneTabBar(
         modifier = modifier,
-        onMenuClicked = openDrawer) { tabBarModifier ->
+        onMenuClicked = openDrawer
+    ) { tabBarModifier ->
         CraneTabs(
             modifier = tabBarModifier,
             titles = CraneScreen.values().map { it.name },

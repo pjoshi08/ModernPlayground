@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ModernPlayground"
 include(":app")
-include(":shared-test")
+//include(":shared-test")
