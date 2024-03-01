@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.modernplayground.base.CraneDrawer
 import com.example.modernplayground.data.ExploreModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,8 +58,12 @@ fun CraneHomeContent(
     openDrawer: () -> Unit,
     viewModel: MainViewModel = viewModel()
 ) {
-    // TODO: consume stream of data from viewmodel
-    val suggestedDestinations: List<ExploreModel> = remember { emptyList() }
+    // COMPLETED: consume stream of data from viewmodel
+    /// [collectAsStateWithLifecycle()] collects values from the StateFlow and represents the
+    /// latest value via Compose's State API in a lifecycle-aware manner. This will make the
+    /// Compose code that reads that state value recompose on new emissions.
+    /// Also available: Livedata.observeAsState(), Observable.subscribeAsState()
+    val suggestedDestinations by viewModel.suggestedDestinations.collectAsStateWithLifecycle()
 
     val onPeopleChanged: (Int) -> Unit = { viewModel.updatePeople(it) }
     var tabSelected by remember { mutableStateOf(CraneScreen.Fly) }
