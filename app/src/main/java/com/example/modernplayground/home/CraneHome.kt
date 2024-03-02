@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.modernplayground.base.CraneTabBar
 import com.example.modernplayground.base.CraneTabs
 import com.example.modernplayground.base.ExploreSection
+import kotlinx.coroutines.launch
 
 typealias OnExploreItemClicked = (ExploreModel) -> Unit
 
@@ -40,11 +42,40 @@ fun CraneHome(
         modifier = Modifier.statusBarsPadding(),
         drawerContent = { CraneDrawer() }
     ) { padding ->
+        // Using the rememberCoroutineScope API returns a CoroutineScope bound to the point in
+        // the Composition where you call it. The scope will be automatically canceled once it
+        // leaves the Composition. With that scope, you can start coroutines when you're not in
+        // the Composition.
+
+        // Looking back at the landing screen step that used LaunchedEffect, could you use
+        // rememberCoroutineScope and call scope.launch { delay(); onTimeout(); } instead of
+        // using LaunchedEffect?
+
+        // You could've done that, and it would've seemed to work, but it wouldn't be correct.
+        // As explained in the Thinking in Compose documentation, composables can be called by
+        // Compose at any moment. LaunchedEffect guarantees that the side-effect will be executed
+        // when the call to that composable makes it into the Composition. If you use
+        // rememberCoroutineScope and scope.launch in the body of the LandingScreen, the coroutine
+        // will be executed every time LandingScreen is called by Compose regardless of whether
+        // that call makes it into the Composition or not. Therefore, you'll waste resources and
+        // you won't be executing this side-effect in a controlled environment.
+        val scope = rememberCoroutineScope()
         CraneHomeContent(
             modifier = modifier.padding(padding),
             onExploreItemClicked = onExploreItemClicked,
             openDrawer = {
-                // TODO: rememberCoroutineScope step - open navigation drawer
+                // COMPLETED: rememberCoroutineScope step - open navigation drawer
+
+                // You cannot use LaunchedEffect as before because we cannot call composables
+                // in openDrawer. We're not in the Composition.
+                scope.launch {
+                    // Suspend functions, in addition to being able to run asynchronous code,
+                    // also help represent concepts that happen over time. As opening the drawer
+                    // requires some time, movement, and potential animations, that's perfectly
+                    // reflected with the suspend function, which will suspend the execution of
+                    // the coroutine where it's been called until it finishes and resumes execution.
+                    scaffoldState.drawerState.open()
+                }
             }
         )
     }

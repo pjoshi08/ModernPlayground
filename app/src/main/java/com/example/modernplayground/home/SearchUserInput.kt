@@ -8,19 +8,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.modernplayground.R
 import com.example.modernplayground.base.CraneEditableUserInput
 import com.example.modernplayground.base.CraneUserInput
+import com.example.modernplayground.base.rememberEditableUserInputState
 import com.example.modernplayground.home.PeopleUserInputAnimationState.Invalid
 import com.example.modernplayground.home.PeopleUserInputAnimationState.Valid
 import com.example.modernplayground.ui.CraneTheme
+import kotlinx.coroutines.flow.filter
 
 enum class PeopleUserInputAnimationState { Valid, Invalid }
 
@@ -80,12 +85,29 @@ fun FromDestination() {
 
 @Composable
 fun ToDestinationUserInput(onToDestinationChanged: (String) -> Unit) {
+    /// remember the state at the ToDestinationUserInput level and pass it into CraneEditableUserInput
+    val editableUserInputState = rememberEditableUserInputState(hint = "Choose Destination")
     CraneEditableUserInput(
-        hint = "Choose Destination",
+        state = editableUserInputState,
         caption = "To",
-        vectorImageId = R.drawable.ic_plane,
-        onInputChanged = onToDestinationChanged
+        vectorImageId = R.drawable.ic_plane
     )
+
+    // trigger a side-effect using LaunchedEffect every time the input changes and call the
+    // onToDestinationChanged lambda
+    val currentOnDestinationChanged by rememberUpdatedState(onToDestinationChanged)
+    LaunchedEffect(editableUserInputState) {
+        // The snapshotFlow API converts Compose State<T> objects into a Flow. When the state
+        // read inside snapshotFlow mutates, the Flow will emit the new value to the collector.
+        // In this case, you convert the state into a flow to use the power of flow operators.
+        // With that, you filter when the text is not the hint, and collect the emitted items
+        // to notify the parent that the current destination changed.
+        snapshotFlow { editableUserInputState.text }
+            .filter { !editableUserInputState.isHint }
+            .collect {
+                currentOnDestinationChanged(editableUserInputState.text)
+            }
+    }
 }
 
 @Composable
