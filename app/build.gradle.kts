@@ -29,7 +29,8 @@ android {
     buildTypes {
         getByName("debug") {
             isMinifyEnabled = false
-            isTestCoverageEnabled = true
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             testProguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguardTest-rules.pro")
         }
@@ -63,21 +64,19 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
         buildConfig = true
     }
     packagingOptions {
-        excludes += "META-INF/AL2.0"
-        excludes += "META-INF/LGPL2.1"
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/AL2.0", "META-INF/LGPL2.1")
         }
     }
     composeOptions {
@@ -165,7 +164,6 @@ dependencies {
     testImplementation(libs.androidx.test.core.ktx)
     testImplementation(libs.androidx.test.ext)
     testImplementation(libs.androidx.test.rules)
-    testImplementation(project(":shared-test"))
 
     // AndroidX Test - Instrumented testing
     androidTestImplementation(libs.androidx.test.core.ktx)
@@ -179,7 +177,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso.intents)
     androidTestImplementation(libs.androidx.test.espresso.idling.resources)
     androidTestImplementation(libs.androidx.test.espresso.idling.concurrent)
-    androidTestImplementation(project(":shared-test"))
 
     // AndroidX Test - Hilt testing
     androidTestImplementation(libs.hilt.android.testing)
