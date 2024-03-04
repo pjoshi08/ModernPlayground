@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,10 +21,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +46,7 @@ import com.example.modernplayground.ui.crane_caption
 import coil.request.ImageRequest.Builder
 import com.example.modernplayground.R
 import com.example.modernplayground.ui.crane_divider_color
+import kotlinx.coroutines.launch
 
 @Composable
 fun ExploreSection(
@@ -59,10 +66,60 @@ fun ExploreSection(
                 style = MaterialTheme.typography.caption.copy(color = crane_caption)
             )
             Spacer(Modifier.height(8.dp))
-            // TODO: derivedStateOf step
-            // TODO: Show "Scroll on top" button when the first item of the list is not visible
-            val listState = rememberLazyListState()
-            ExploreList(exploreList, onItemClicked, listState = listState)
+            Box(Modifier.weight(1f)) {
+                val listState = rememberLazyListState()
+                ExploreList(exploreList, onItemClicked, listState = listState)
+                // COMPLETED: derivedStateOf step
+                // COMPLETED: Show "Scroll on top" button when the first item of the list is not visible
+
+                // DO NOT DO THIS - It's executed on every recomposition
+                // val showButton = listState.firstVisibleItemIndex > 0
+                // This solution is not as efficient as it could be, because the composable
+                // function reading showButton recomposes as often as firstVisibleItemIndex
+                // changes - which happens frequently when scrolling. Instead, you want the
+                // function to recompose only when the condition changes between true and false.
+
+                // There's an API that allows you to do this: the derivedStateOf API.
+
+                // listState is an observable Compose State. Your calculation, showButton,
+                // 'also needs to be a Compose State since you want the UI to recompose when
+                // its value changes, and show or hide the button.
+
+                // Use derivedStateOf when you want a Compose State that's derived from
+                // another State. The derivedStateOf calculation block is executed every
+                // time the internal state changes, but the composable function only
+                // recomposes when the result of the calculation is different from the
+                // last one. This minimizes the amount of times functions reading showButton
+                // recompose.
+
+                // Using the derivedStateOf API in this case is a better and more efficient
+                // alternative. You'll also wrap the call with the remember API, so the
+                // calculated value survives recomposition.
+
+                // When Should I use derivedStateOf: https://medium.com/androiddevelopers/jetpack-compose-when-should-i-use-derivedstateof-63ce7954c11b
+
+                // Show the button if the first visible item is past the first item.
+                // We use a remembered derived state to minimize unnecessary compositions
+                val showButton by remember {
+                    derivedStateOf { listState.firstVisibleItemIndex > 0 }
+                }
+                if (showButton) {
+                    val coroutineScope = rememberCoroutineScope()
+                    FloatingActionButton(
+                        backgroundColor = MaterialTheme.colors.primary,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .navigationBarsPadding()
+                            .padding(bottom = 8.dp),
+                        onClick = {
+                            coroutineScope.launch {
+                                listState.scrollToItem(0)
+                            }
+                        }) {
+                        Text("Up!")
+                    }
+                }
+            }
         }
     }
 }
