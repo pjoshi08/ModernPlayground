@@ -24,12 +24,12 @@ enum class RallyScreen(
         body = { onScreenChange -> OverviewBody(onScreenChange) }
     ),
     Accounts(
-    icon = Icons.Filled.AttachMoney,
-    body = { AccountsBody(UserData.accounts) }
+        icon = Icons.Filled.AttachMoney,
+        body = { AccountsBody(UserData.accounts) }
     ),
     Bills(
-    icon = Icons.Filled.MoneyOff,
-    body = { BillsBody(UserData.bills) }
+        icon = Icons.Filled.MoneyOff,
+        body = { BillsBody(UserData.bills) }
     );
 
     @Composable
