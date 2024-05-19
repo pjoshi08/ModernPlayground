@@ -126,6 +126,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.material.core)
+    implementation(libs.android.material)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
