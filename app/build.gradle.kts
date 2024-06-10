@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.navigation)
 }
 
 android {
@@ -74,11 +75,11 @@ android {
         compose = true
         buildConfig = true
     }
-    packagingOptions {
+    /*packagingOptions {
         resources {
             excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/AL2.0", "META-INF/LGPL2.1")
         }
-    }
+    }*/
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
@@ -87,6 +88,10 @@ android {
             freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
             freeCompilerArgs += "-opt-in=kotlin.Experimental"
         }
+    }
+    dataBinding {
+        enable = true
+        enableForTests = true
     }
 }
 
@@ -115,6 +120,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.databinding.common)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     ksp(libs.room.compiler)
     implementation(libs.androidx.lifecycle.runtimeCompose)
@@ -142,6 +148,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.accompanist.appcompat.theme)
     implementation(libs.accompanist.swiperefresh)
+    //implementation(libs.navigation)
 
     debugImplementation(composeBom)
     debugImplementation(libs.androidx.compose.ui.tooling.core)
