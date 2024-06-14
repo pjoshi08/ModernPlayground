@@ -1,31 +1,20 @@
 package com.example.modernplayground.tasks
 
-import android.app.Application
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.modernplayground.R
-import com.example.modernplayground.data.Task
 import com.example.modernplayground.data.Result
 import com.example.modernplayground.data.Result.Success
-import com.example.modernplayground.data.Result.Loading
-import com.example.modernplayground.data.source.DefaultTasksRepository
+import com.example.modernplayground.data.Task
+import com.example.modernplayground.data.source.TasksRepository
 import com.example.modernplayground.util.Event
 import kotlinx.coroutines.launch
-import androidx.lifecycle.*
 
 /**
  * ViewModel for the task list screen.
  */
-class TasksViewModel(application: Application) : AndroidViewModel(application) {
-
-    // Note, for testing and architecture purposes, it's bad practice to construct the repository
-    // here. We'll show you how to fix this during the codelab
-    private val tasksRepository = DefaultTasksRepository.getRepository(application)
+class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
 
     private val _forceUpdate = MutableLiveData<Boolean>(false)
 
@@ -178,14 +167,14 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
         val result = MutableLiveData<List<Task>>()
 
         if (tasksResult is Success) {
-            isDataLoadingError.value = false
+            //isDataLoadingError.value = false  // this variable is causing error
             viewModelScope.launch {
                 result.value = filterItems(tasksResult.data, currentFiltering)
             }
         } else {
             result.value = emptyList()
             showSnackbarMessage(R.string.loading_tasks_error)
-            isDataLoadingError.value = true
+            //isDataLoadingError.value = true
         }
 
         return result
@@ -217,5 +206,13 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
     fun refresh() {
         _forceUpdate.value = true
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    class TasksViewModelFactory (
+        private val tasksRepository: TasksRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            (TasksViewModel(tasksRepository) as T)
     }
 }

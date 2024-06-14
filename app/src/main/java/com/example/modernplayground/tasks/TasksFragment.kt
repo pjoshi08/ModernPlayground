@@ -13,19 +13,25 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.modernplayground.R
+import com.example.modernplayground.data.source.DefaultTasksRepository
 import com.example.modernplayground.databinding.TasksFragBinding
 import com.example.modernplayground.util.EventObserver
 import com.example.modernplayground.util.setupRefreshLayout
 import com.example.modernplayground.util.setupSnackbar
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
+import com.example.modernplayground.tasks.TasksViewModel.TasksViewModelFactory
 
 /**
  * Display a grid of [Task]s. User can choose to view all, active or completed tasks.
  */
 class TasksFragment : Fragment() {
 
-    private val viewModel by viewModels<TasksViewModel>()
+    private val viewModel by viewModels<TasksViewModel> {
+        TasksViewModelFactory(
+            DefaultTasksRepository.getRepository(requireActivity().application)
+        )
+    }
 
     private val args: TasksFragmentArgs by navArgs()
 

@@ -3,6 +3,8 @@ package com.example.modernplayground.tasks
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.modernplayground.data.Task
+import com.example.modernplayground.data.source.FakeTestRepository
 import com.example.modernplayground.getOrAwaitValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -24,13 +26,23 @@ class TasksViewModelTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
+    // Use a fake repository to be injected into the viewmodel
+    private lateinit var tasksRepository: FakeTestRepository
+
     // Subject under test
     private lateinit var tasksViewModel: TasksViewModel
 
     @Before
     fun setupViewModel() {
+        // We initialise the tasks to 3, with one active and two completed
+        tasksRepository = FakeTestRepository()
+        val task1 = Task("Title1", "Description1")
+        val task2 = Task("Title2", "Description2", true)
+        val task3 = Task("Title3", "Description3", true)
+        tasksRepository.addTasks(task1, task2, task3)
+
         // Given a fresh TasksViewModel
-        tasksViewModel = TasksViewModel(ApplicationProvider.getApplicationContext())
+        tasksViewModel = TasksViewModel(tasksRepository)
     }
 
     @Test
@@ -46,9 +58,6 @@ class TasksViewModelTest {
 
     @Test
     fun setFilterAllTasks_tasksAddViewVisible() {
-        // Given a fresh ViewModel
-        val tasksViewModel = TasksViewModel(ApplicationProvider.getApplicationContext())
-
         // When the filter type is ALL_TASKS
         tasksViewModel.setFiltering(TasksFilterType.ALL_TASKS)
 
