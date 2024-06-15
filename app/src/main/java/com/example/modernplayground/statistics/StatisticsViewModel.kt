@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.example.modernplayground.TodoApplication
 import com.example.modernplayground.data.Task
 import com.example.modernplayground.data.source.DefaultTasksRepository
 import kotlinx.coroutines.launch
@@ -21,7 +22,7 @@ class StatisticsViewModel(application: Application) : AndroidViewModel(applicati
 
     // Note, for testing and architecture purposes, it's bad practice to construct the repository
     // here. We'll show you how to fix this during the codelab
-    private val tasksRepository = DefaultTasksRepository.getRepository(application)
+    private val tasksRepository = (application as TodoApplication).tasksRepository
 
     private val tasks: LiveData<Result<List<Task>>> = tasksRepository.observeTasks()
     private val _dataLoading = MutableLiveData<Boolean>(false)

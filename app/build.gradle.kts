@@ -125,6 +125,8 @@ dependencies {
     ksp(libs.room.compiler)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation(libs.fragment.test)
+    implementation(libs.test.core)
 
     // Hilt
     implementation(libs.hilt.android.core)
@@ -148,7 +150,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.accompanist.appcompat.theme)
     implementation(libs.accompanist.swiperefresh)
-    //implementation(libs.navigation)
 
     debugImplementation(composeBom)
     debugImplementation(libs.androidx.compose.ui.tooling.core)

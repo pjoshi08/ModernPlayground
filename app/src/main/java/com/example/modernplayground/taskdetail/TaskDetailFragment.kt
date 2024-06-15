@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.modernplayground.R
+import com.example.modernplayground.TodoApplication
 import com.example.modernplayground.data.source.DefaultTasksRepository
 import com.example.modernplayground.databinding.TaskdetailFragBinding
 import com.example.modernplayground.tasks.DELETE_RESULT_OK
@@ -31,7 +32,7 @@ class TaskDetailFragment : Fragment() {
 
     private val viewModel by viewModels<TaskDetailViewModel> {
         TaskDetailViewModel.TaskDetailViewModelFactory(
-            DefaultTasksRepository.getRepository(requireActivity().application)
+            (requireContext().applicationContext as TodoApplication).tasksRepository
         )
     }
 

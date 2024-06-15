@@ -154,6 +154,10 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+# Testing code should not be included in the main code.
+# Once https://issuetracker.google.com/128612536 is fixed this can be fixed.
+fragment-test = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentKtx" }
+test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 
 
 # Dependencies of the included build-logic
