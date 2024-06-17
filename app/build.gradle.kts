@@ -197,6 +197,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso.intents)
     androidTestImplementation(libs.androidx.test.espresso.idling.resources)
     androidTestImplementation(libs.androidx.test.espresso.idling.concurrent)
+    androidTestImplementation(libs.mockito.core)
+    androidTestImplementation(libs.dexmaker.mockito)
 
     // AndroidX Test - Hilt testing
     androidTestImplementation(libs.hilt.android.testing)
