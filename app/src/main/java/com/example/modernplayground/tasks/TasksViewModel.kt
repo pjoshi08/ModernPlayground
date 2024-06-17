@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
  */
 class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
 
-    private val _forceUpdate = MutableLiveData<Boolean>(false)
+    private val _forceUpdate = MutableLiveData(false)
 
     private val _items: LiveData<List<Task>> = _forceUpdate.switchMap { forceUpdate ->
         if (forceUpdate) {
@@ -53,7 +53,7 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
     private var currentFiltering = TasksFilterType.ALL_TASKS
 
     // Not used at the moment
-    private val isDataLoadingError = MutableLiveData<Boolean>()
+    //private val isDataLoadingError = MutableLiveData<Boolean>()
 
     private val _openTaskEvent = MutableLiveData<Event<String>>()
     val openTaskEvent: LiveData<Event<String>> = _openTaskEvent
@@ -166,15 +166,22 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         // TODO: This is a good case for liveData builder. Replace when stable.
         val result = MutableLiveData<List<Task>>()
 
+        // Bug fix
+        // TODO: There must be a better way to fix clickTask_navigateToDetailFragmentOne in
+        // TasksFragmentTest
+        if (currentFiltering == null) {
+            currentFiltering = TasksFilterType.ALL_TASKS
+        }
+
         if (tasksResult is Success) {
-            //isDataLoadingError.value = false  // this variable is causing error
+            // isDataLoadingError.value = false  // this variable is causing error
             viewModelScope.launch {
                 result.value = filterItems(tasksResult.data, currentFiltering)
             }
         } else {
             result.value = emptyList()
             showSnackbarMessage(R.string.loading_tasks_error)
-            //isDataLoadingError.value = true
+            // isDataLoadingError.value = true
         }
 
         return result
@@ -187,8 +194,12 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
         _forceUpdate.value = forceUpdate
     }
 
-    private fun filterItems(tasks: List<Task>, filteringType: TasksFilterType): List<Task> {
+    private fun filterItems(
+        tasks: List<Task>,
+        filteringType: TasksFilterType = TasksFilterType.ALL_TASKS
+    ): List<Task> {
         val tasksToShow = ArrayList<Task>()
+
         // We filter the tasks based on the requestType
         for (task in tasks) {
             when (filteringType) {
@@ -207,12 +218,12 @@ class TasksViewModel(private val tasksRepository: TasksRepository) : ViewModel()
     fun refresh() {
         _forceUpdate.value = true
     }
+}
 
-    @Suppress("UNCHECKED_CAST")
-    class TasksViewModelFactory (
-        private val tasksRepository: TasksRepository
-    ) : ViewModelProvider.NewInstanceFactory() {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            (TasksViewModel(tasksRepository) as T)
-    }
+@Suppress("UNCHECKED_CAST")
+public class TasksViewModelFactory (
+    private val tasksRepository: TasksRepository
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>) =
+        (TasksViewModel(tasksRepository) as T)
 }
