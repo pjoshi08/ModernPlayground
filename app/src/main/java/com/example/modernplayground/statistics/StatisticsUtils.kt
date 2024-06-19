@@ -6,6 +6,7 @@ import com.example.modernplayground.data.Task
  * Function that does some trivial computation. Used to showcase unit tests.
  */
 internal fun getActiveAndCompletedStats(tasks: List<Task>?): StatsResult {
+
     return if (tasks.isNullOrEmpty()) {
         StatsResult(0f, 0f)
     } else {

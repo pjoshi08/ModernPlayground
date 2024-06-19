@@ -11,22 +11,17 @@ import com.example.modernplayground.data.source.local.ToDoDatabase
 import com.example.modernplayground.data.source.remote.TasksRemoteDataSource
 import kotlinx.coroutines.runBlocking
 
+/**
+ * A Service Locator for the [TasksRepository]. This is the prod version, with a
+ * the "real" [TasksRemoteDataSource].
+ */
 object ServiceLocator {
 
+    private val lock = Any()
     private var database: ToDoDatabase? = null
     @Volatile
     var tasksRepository: TasksRepository? = null
         @VisibleForTesting set
-        // This annotation is a way to express that the reason the setter is public is because of testing.
-
-    // Whether you run your test alone or in a group of tests, your tests should run exactly the same.
-    // What this means is that your tests should have no behavior that is dependent on one another
-    // (which means avoiding sharing objects between tests).
-    //
-    // Since the ServiceLocator is a singleton, it has the possibility of being accidentally shared
-    // between tests. To help avoid this, create a method that properly resets the ServiceLocator
-    // state between tests.
-    private val lock = Any()
 
     fun provideTasksRepository(context: Context): TasksRepository {
         synchronized(this) {
@@ -36,6 +31,7 @@ object ServiceLocator {
 
     private fun createTasksRepository(context: Context): TasksRepository {
         val newRepo = DefaultTasksRepository(TasksRemoteDataSource, createTaskLocalDataSource(context))
+        tasksRepository = newRepo
         return newRepo
     }
 
@@ -56,14 +52,16 @@ object ServiceLocator {
     @VisibleForTesting
     fun resetRepository() {
         synchronized(lock) {
-            runBlocking { TasksRemoteDataSource.deleteAllTasks() }
+            runBlocking {
+                TasksRemoteDataSource.deleteAllTasks()
+            }
+            // Clear all data to avoid test pollution.
+            database?.apply {
+                clearAllTables()
+                close()
+            }
+            database = null
+            tasksRepository = null
         }
-        // Clear al data to avoid test pollution
-        database?.apply {
-            clearAllTables()
-            close()
-        }
-        database = null
-        tasksRepository = null
     }
 }

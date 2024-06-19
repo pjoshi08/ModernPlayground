@@ -19,7 +19,9 @@ import com.google.android.material.snackbar.Snackbar
  * Transforms static java function Snackbar.make() to an extension function on View.
  */
 fun View.showSnackbar(snackbarText: String, timeLength: Int) {
-    Snackbar.make(this, snackbarText, timeLength).run { show() }
+    Snackbar.make(this, snackbarText, timeLength).run {
+        show()
+    }
 }
 
 /**
@@ -30,6 +32,7 @@ fun View.setupSnackbar(
     snackbarEvent: LiveData<Event<Int>>,
     timeLength: Int
 ) {
+
     snackbarEvent.observe(lifecycleOwner) { event ->
         event.getContentIfNotHandled()?.let {
             showSnackbar(context.getString(it), timeLength)
@@ -47,5 +50,7 @@ fun Fragment.setupRefreshLayout(
         ContextCompat.getColor(requireActivity(), R.color.colorPrimaryDark)
     )
     // Set the scrolling view in the custom SwipeRefreshLayout.
-    scrollUpChild?.let { refreshLayout.scrollUpChild = it }
+    scrollUpChild?.let {
+        refreshLayout.scrollUpChild = it
+    }
 }

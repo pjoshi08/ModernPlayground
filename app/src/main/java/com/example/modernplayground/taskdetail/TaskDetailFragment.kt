@@ -13,10 +13,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.modernplayground.R
 import com.example.modernplayground.TodoApplication
-import com.example.modernplayground.data.source.DefaultTasksRepository
 import com.example.modernplayground.databinding.TaskdetailFragBinding
 import com.example.modernplayground.tasks.DELETE_RESULT_OK
-import com.example.modernplayground.tasks.TasksViewModel
 import com.example.modernplayground.util.EventObserver
 import com.example.modernplayground.util.setupRefreshLayout
 import com.example.modernplayground.util.setupSnackbar
@@ -31,9 +29,7 @@ class TaskDetailFragment : Fragment() {
     private val args: TaskDetailFragmentArgs by navArgs()
 
     private val viewModel by viewModels<TaskDetailViewModel> {
-        TaskDetailViewModel.TaskDetailViewModelFactory(
-            (requireContext().applicationContext as TodoApplication).tasksRepository
-        )
+        TaskDetailViewModelFactory((requireContext().applicationContext as TodoApplication).tasksRepository)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,10 +56,9 @@ class TaskDetailFragment : Fragment() {
     }
 
     private fun setupFab() {
-        viewDataBinding.editTaskFab.setOnClickListener { viewModel.editTask() }
-        /*activity?.findViewById<View>(R.id.edit_task_fab)?.setOnClickListener {
+        activity?.findViewById<View>(R.id.edit_task_fab)?.setOnClickListener {
             viewModel.editTask()
-        }*/
+        }
     }
 
     override fun onCreateView(
@@ -79,7 +74,7 @@ class TaskDetailFragment : Fragment() {
 
         viewModel.start(args.taskId)
 
-        setHasOptionsMenu(true)  // TODO: Check new way to create menu
+        setHasOptionsMenu(true)
         return view
     }
 

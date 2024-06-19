@@ -7,9 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.modernplayground.R
 import com.example.modernplayground.TodoApplication
-import com.example.modernplayground.data.Task
 import com.example.modernplayground.data.Result.Success
-import com.example.modernplayground.data.source.DefaultTasksRepository
+import com.example.modernplayground.data.Task
 import com.example.modernplayground.util.Event
 import kotlinx.coroutines.launch
 
@@ -44,8 +43,9 @@ class AddEditTaskViewModel(application: Application) : AndroidViewModel(applicat
     private var taskCompleted = false
 
     fun start(taskId: String?) {
-        if (_dataLoading.value == true)
+        if (_dataLoading.value == true) {
             return
+        }
 
         this.taskId = taskId
         if (taskId == null) {

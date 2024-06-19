@@ -11,12 +11,33 @@ import com.example.modernplayground.data.Result
 import com.example.modernplayground.data.Result.Error
 import kotlinx.coroutines.withContext
 
+/**
+ * Concrete implementation of a data source as a db.
+ */
 class TasksLocalDataSource internal constructor(
     private val tasksDao: TasksDao,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : TasksDataSource {
-    override fun observeTasks(): LiveData<Result<List<Task>>> =
-        tasksDao.observeTasks().map { Success(it) }
+
+    override fun observeTasks(): LiveData<Result<List<Task>>> {
+        return tasksDao.observeTasks().map {
+            Success(it)
+        }
+    }
+
+    override fun observeTask(taskId: String): LiveData<Result<Task>> {
+        return tasksDao.observeTaskById(taskId).map {
+            Success(it)
+        }
+    }
+
+    override suspend fun refreshTask(taskId: String) {
+        //NO-OP
+    }
+
+    override suspend fun refreshTasks() {
+        //NO-OP
+    }
 
     override suspend fun getTasks(): Result<List<Task>> = withContext(ioDispatcher) {
         return@withContext try {
@@ -25,13 +46,6 @@ class TasksLocalDataSource internal constructor(
             Error(e)
         }
     }
-
-    override suspend fun refreshTasks() {
-        TODO("Not yet implemented")
-    }
-
-    override fun observeTask(taskId: String): LiveData<Result<Task>> =
-        tasksDao.observeTaskById(taskId).map { Success(it) }
 
     override suspend fun getTask(taskId: String): Result<Task> = withContext(ioDispatcher) {
         try {
@@ -44,10 +58,6 @@ class TasksLocalDataSource internal constructor(
         } catch (e: Exception) {
             return@withContext Error(e)
         }
-    }
-
-    override suspend fun refreshTask(taskId: String) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun saveTask(task: Task) = withContext(ioDispatcher) {
@@ -81,5 +91,4 @@ class TasksLocalDataSource internal constructor(
     override suspend fun deleteTask(taskId: String) = withContext<Unit>(ioDispatcher) {
         tasksDao.deleteTaskById(taskId)
     }
-
 }

@@ -1,14 +1,9 @@
 package com.example.modernplayground.data.source
 
-import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.room.Room
-import com.example.modernplayground.data.Task
 import com.example.modernplayground.data.Result
 import com.example.modernplayground.data.Result.Success
-import com.example.modernplayground.data.source.local.TasksLocalDataSource
-import com.example.modernplayground.data.source.local.ToDoDatabase
-import com.example.modernplayground.data.source.remote.TasksRemoteDataSource
+import com.example.modernplayground.data.Task
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -22,8 +17,7 @@ import kotlinx.coroutines.withContext
 class DefaultTasksRepository(
     private val tasksRemoteDataSource: TasksDataSource,
     private val tasksLocalDataSource: TasksDataSource,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : TasksRepository {
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) : TasksRepository {
 
     override suspend fun getTasks(forceUpdate: Boolean): Result<List<Task>> {
         if (forceUpdate) {

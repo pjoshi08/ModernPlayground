@@ -22,7 +22,9 @@ import com.example.modernplayground.data.source.TasksRepository
 /**
  * ViewModel for the Details screen.
  */
-class TaskDetailViewModel(private val tasksRepository: TasksRepository) : ViewModel() {
+class TaskDetailViewModel(
+    private val tasksRepository: TasksRepository
+) : ViewModel() {
 
     private val _taskId = MutableLiveData<String>()
 
@@ -105,12 +107,12 @@ class TaskDetailViewModel(private val tasksRepository: TasksRepository) : ViewMo
     private fun showSnackbarMessage(@StringRes message: Int) {
         _snackbarText.value = Event(message)
     }
+}
 
-    @Suppress("UNCHECKED_CAST")
-    class TaskDetailViewModelFactory (
-        private val tasksRepository: TasksRepository
-    ) : ViewModelProvider.NewInstanceFactory() {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            (TaskDetailViewModel(tasksRepository) as T)
-    }
+@Suppress("UNCHECKED_CAST")
+class TaskDetailViewModelFactory (
+    private val tasksRepository: TasksRepository
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>) =
+        (TaskDetailViewModel(tasksRepository) as T)
 }

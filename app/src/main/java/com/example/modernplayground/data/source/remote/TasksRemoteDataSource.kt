@@ -5,16 +5,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.example.modernplayground.data.Result
-import com.example.modernplayground.data.Result.Success
 import com.example.modernplayground.data.Result.Error
 import com.example.modernplayground.data.Result.Loading
+import com.example.modernplayground.data.Result.Success
 import com.example.modernplayground.data.Task
 import com.example.modernplayground.data.source.TasksDataSource
 import kotlinx.coroutines.delay
 
+/**
+ * Implementation of the data source that adds a latency simulating network.
+ */
 object TasksRemoteDataSource : TasksDataSource {
 
     private const val SERVICE_LATENCY_IN_MILLIS = 2000L
+
     private var TASKS_SERVICE_DATA = LinkedHashMap<String, Task>(2)
 
     init {
@@ -23,15 +27,6 @@ object TasksRemoteDataSource : TasksDataSource {
     }
 
     private val observableTasks = MutableLiveData<Result<List<Task>>>()
-
-    override fun observeTasks(): LiveData<Result<List<Task>>> = observableTasks
-
-    override suspend fun getTasks(): Result<List<Task>> {
-        // Simulate network by delaying the execution.
-        val tasks = TASKS_SERVICE_DATA.values.toList()
-        delay(SERVICE_LATENCY_IN_MILLIS)
-        return Success(tasks)
-    }
 
     @SuppressLint("NullSafeMutableLiveData")
     override suspend fun refreshTasks() {
@@ -42,18 +37,30 @@ object TasksRemoteDataSource : TasksDataSource {
         refreshTasks()
     }
 
-    override fun observeTask(taskId: String): LiveData<Result<Task>> =
-        observableTasks.map { tasks ->
+    override fun observeTasks(): LiveData<Result<List<Task>>> {
+        return observableTasks
+    }
+
+    override fun observeTask(taskId: String): LiveData<Result<Task>> {
+        return observableTasks.map { tasks ->
             when (tasks) {
                 is Loading -> Loading
                 is Error -> Error(tasks.exception)
                 is Success -> {
-                    val task = tasks.data.firstOrNull { it.id == taskId }
-                        ?: return@map Error(Exception("Not Found!"))
+                    val task = tasks.data.firstOrNull() { it.id == taskId }
+                        ?: return@map Error(Exception("Not found"))
                     Success(task)
                 }
             }
         }
+    }
+
+    override suspend fun getTasks(): Result<List<Task>> {
+        // Simulate network by delaying the execution.
+        val tasks = TASKS_SERVICE_DATA.values.toList()
+        delay(SERVICE_LATENCY_IN_MILLIS)
+        return Success(tasks)
+    }
 
     override suspend fun getTask(taskId: String): Result<Task> {
         // Simulate network by delaying the execution.
@@ -62,6 +69,11 @@ object TasksRemoteDataSource : TasksDataSource {
             return Success(it)
         }
         return Error(Exception("Task not found"))
+    }
+
+    private fun addTask(title: String, description: String) {
+        val newTask = Task(title, description)
+        TASKS_SERVICE_DATA[newTask.id] = newTask
     }
 
     override suspend fun saveTask(task: Task) {
@@ -98,10 +110,5 @@ object TasksRemoteDataSource : TasksDataSource {
 
     override suspend fun deleteTask(taskId: String) {
         TASKS_SERVICE_DATA.remove(taskId)
-    }
-
-    private fun addTask(title: String, description: String) {
-        val newTask = Task(title, description)
-        TASKS_SERVICE_DATA[newTask.id] = newTask
     }
 }
