@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.modernplayground.TodoApplication
@@ -13,14 +15,15 @@ import kotlinx.coroutines.launch
 import com.example.modernplayground.data.Result
 import com.example.modernplayground.data.Result.Success
 import com.example.modernplayground.data.Result.Error
+import com.example.modernplayground.data.source.TasksRepository
 
 
 /**
  * ViewModel for the statistics screen.
  */
-class StatisticsViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val tasksRepository = (application as TodoApplication).tasksRepository
+class StatisticsViewModel(
+    private val tasksRepository: TasksRepository
+) : ViewModel() {
 
     private val tasks: LiveData<Result<List<Task>>> = tasksRepository.observeTasks()
     private val _dataLoading = MutableLiveData<Boolean>(false)
@@ -32,8 +35,7 @@ class StatisticsViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
-    val activeTasksPercent = stats.map {
-        it?.activeTasksPercent ?: 0f }
+    val activeTasksPercent = stats.map { it?.activeTasksPercent ?: 0f }
     val completedTasksPercent: LiveData<Float> = stats.map { it?.completedTasksPercent ?: 0f }
     val dataLoading: LiveData<Boolean> = _dataLoading
     val error: LiveData<Boolean> = tasks.map { it is Error }
@@ -46,4 +48,12 @@ class StatisticsViewModel(application: Application) : AndroidViewModel(applicati
             _dataLoading.value = false
         }
     }
+}
+
+@Suppress("UNCHECKED_CAST")
+class StatisticsViewModelFactory(
+    private val tasksRepository: TasksRepository
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        (StatisticsViewModel(tasksRepository) as T)
 }

@@ -21,7 +21,9 @@ import com.example.modernplayground.ServiceLocator
 import com.example.modernplayground.data.Task
 import com.example.modernplayground.data.source.FakeAndroidTestRepository
 import com.example.modernplayground.data.source.TasksRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -33,6 +35,7 @@ import org.mockito.Mockito.verify
 
 @RunWith(AndroidJUnit4::class)
 @MediumTest
+@ExperimentalCoroutinesApi
 class TasksFragmentTest {
 
     @get:Rule

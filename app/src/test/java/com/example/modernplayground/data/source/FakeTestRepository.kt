@@ -84,4 +84,8 @@ class FakeTestRepository : TasksRepository {
         runBlocking { refreshTasks() }
     }
 
+    fun isTaskCompleted(taskId: String): Boolean? {
+        return tasksServiceData[taskId]?.isCompleted
+    }
+
 }

@@ -1,11 +1,14 @@
 package com.example.modernplayground.tasks
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.modernplayground.MainCoroutineRule
+import com.example.modernplayground.R
 import com.example.modernplayground.data.Task
 import com.example.modernplayground.data.source.FakeTestRepository
 import com.example.modernplayground.getOrAwaitValue
+import com.example.modernplayground.util.Event
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.not
@@ -17,6 +20,7 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
+@ExperimentalCoroutinesApi
 class TasksViewModelTest {
 
     // InstantTaskExecutorRule is a JUnit Rule. When you use it with the @get:Rule annotation,
@@ -25,6 +29,9 @@ class TasksViewModelTest {
     // the test results happen synchronously, and in a repeatable order.
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     // Use a fake repository to be injected into the viewmodel
     private lateinit var tasksRepository: FakeTestRepository
@@ -64,5 +71,22 @@ class TasksViewModelTest {
         // Then the "Add Task" action is visible
         val value = tasksViewModel.tasksAddViewVisible.getOrAwaitValue()
         assertThat(value, `is`(true))
+    }
+
+    @Test
+    fun completeTask_dataAndSnackbarUpdated() {
+        // Create an active task and add it to the repository
+        val task = Task("Title", "Description")
+        tasksRepository.addTasks(task)
+
+        // Mark the task as complete task.
+        tasksViewModel.completeTask(task, true)
+
+        // Verify the task is completed
+        assertThat(tasksRepository.isTaskCompleted(task.id), `is`(true))
+
+        // Assert that the snackbar has been updated with the correct text.
+        val snackbarText: Event<Int> = tasksViewModel.snackbarText.getOrAwaitValue()
+        assertThat(snackbarText.getContentIfNotHandled(), `is`(R.string.task_marked_complete))
     }
 }
