@@ -48,6 +48,7 @@ android {
     // Always show the result of every unit test, even if it passes.
     testOptions.unitTests {
         isIncludeAndroidResources = true
+        //returnDefaultValues = true
 
         all { test ->
             with(test) {
@@ -75,11 +76,7 @@ android {
         compose = true
         buildConfig = true
     }
-    /*packagingOptions {
-        resources {
-            excludes += setOf("/META-INF/{AL2.0,LGPL2.1}", "META-INF/AL2.0", "META-INF/LGPL2.1")
-        }
-    }*/
+
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
