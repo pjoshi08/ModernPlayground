@@ -182,4 +182,8 @@ dependencies {
     // AndroidX Test - Hilt testing
     androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.compiler)
+
+    // Network
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.scalar.converter)
 }
