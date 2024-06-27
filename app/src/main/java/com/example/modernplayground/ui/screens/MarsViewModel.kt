@@ -8,9 +8,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.modernplayground.network.MarsApi
 import kotlinx.coroutines.launch
 
+sealed interface MarsUiState {
+    data class Success(val photos: String) : MarsUiState
+
+    // In the case of Loading and Error states, you don't need to set new data and create
+    // new objects; you are just passing the web response.
+    data object Error : MarsUiState
+    data object Loading : MarsUiState
+}
+
 class MarsViewModel : ViewModel() {
     /** The mutable State that stores the status of the most recent request */
-    var marsUiState: String by mutableStateOf("")
+    var marsUiState: MarsUiState by mutableStateOf(MarsUiState.Loading)
         private set
 
     /**
@@ -30,8 +39,12 @@ class MarsViewModel : ViewModel() {
      */
     private fun getMarsPhotos() {
         viewModelScope.launch {
-            val listResult = MarsApi.retrofitService.getPhotos()
-            marsUiState = listResult
+            marsUiState = try {
+                val listResult = MarsApi.retrofitService.getPhotos()
+                MarsUiState.Success(listResult)
+            } catch (e: Exception) {
+                MarsUiState.Error
+            }
         }
     }
 }
