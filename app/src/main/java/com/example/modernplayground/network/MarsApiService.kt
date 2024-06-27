@@ -1,7 +1,9 @@
 package com.example.modernplayground.network
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 
 // Most web servers today run web services using a common stateless web architecture known as REST,
@@ -56,13 +58,13 @@ private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com
 // and return it as a String. Retrofit has a ScalarsConverter that supports strings and other
 // primitive types.
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(ScalarsConverterFactory.create())
+    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
     .baseUrl(BASE_URL)
     .build()
 
 interface MarsApiService {
     @GET("photos")
-    suspend fun getPhotos(): String
+    suspend fun getPhotos(): List<MarsPhoto>
 }
 
 // In Kotlin, object declarations are used to declare singleton objects. Singleton pattern

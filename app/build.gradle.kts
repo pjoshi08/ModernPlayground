@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kapt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -185,5 +186,7 @@ dependencies {
 
     // Network
     implementation(libs.retrofit)
-    implementation(libs.retrofit.scalar.converter)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.converter)
+    implementation(libs.okhttp)
 }
