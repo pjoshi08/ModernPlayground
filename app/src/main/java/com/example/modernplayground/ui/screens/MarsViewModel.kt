@@ -8,6 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.modernplayground.network.MarsApi
 import kotlinx.coroutines.launch
 
+/**
+ * UI state for the Home screen
+ */
 sealed interface MarsUiState {
     data class Success(val photos: String) : MarsUiState
 

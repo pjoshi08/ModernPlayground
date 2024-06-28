@@ -1,5 +1,6 @@
 package com.example.modernplayground.network
 
+import com.example.modernplayground.model.MarsPhoto
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -57,11 +58,19 @@ private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com
 // web service. In this case, you want Retrofit to fetch a JSON response from the web service
 // and return it as a String. Retrofit has a ScalarsConverter that supports strings and other
 // primitive types.
+/**
+ *  Later, Instead of the ScalarsConverter, we change the converter to [Kotlinx.Serialization]
+ *  to handle JSON response
+ **/
+
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
     .baseUrl(BASE_URL)
     .build()
 
+/**
+ * Retrofit service object for creating api calls
+ */
 interface MarsApiService {
     @GET("photos")
     suspend fun getPhotos(): List<MarsPhoto>
