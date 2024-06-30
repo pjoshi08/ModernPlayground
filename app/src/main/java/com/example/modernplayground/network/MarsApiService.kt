@@ -51,7 +51,8 @@ import retrofit2.http.GET
 // ultimately creates the code to call and consume this service for you, including critical
 // details, such as running the requests on background threads.
 
-private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com"
+// Code moved to AppContainer for manual DI
+//private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com"
 
 // Retrofit needs the base URI for the web service and a converter factory to build a web
 // services API. The converter tells Retrofit what to do with the data it gets back from the
@@ -62,11 +63,10 @@ private const val BASE_URL = "https://android-kotlin-fun-mars-server.appspot.com
  *  Later, Instead of the ScalarsConverter, we change the converter to [Kotlinx.Serialization]
  *  to handle JSON response
  **/
-
-private val retrofit = Retrofit.Builder()
+/*private val retrofit = Retrofit.Builder()
     .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
     .baseUrl(BASE_URL)
-    .build()
+    .build()*/
 
 /**
  * Retrofit service object for creating api calls
@@ -89,9 +89,10 @@ interface MarsApiService {
 // The call to create() function on a Retrofit object is expensive in terms of memory, speed,
 // and performance. The app needs only one instance of the Retrofit API service, so you expose
 // the service to the rest of the app using object declaration.
+/*
 object MarsApi {
     // Lazy initialization
     val retrofitService : MarsApiService by lazy {
         retrofit.create(MarsApiService::class.java)
     }
-}
+}*/
