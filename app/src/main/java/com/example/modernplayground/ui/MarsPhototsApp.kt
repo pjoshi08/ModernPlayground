@@ -30,7 +30,8 @@ fun MarsPhotosApp() {
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            val marsViewModel: MarsViewModel = viewModel(factory = MarsViewModel.Factory)
+            val marsViewModel: MarsViewModel =
+                viewModel(factory = MarsViewModel.Factory)
             HomeScreen(
                 marsUiState = marsViewModel.marsUiState,
                 contentPadding = it
@@ -45,8 +46,8 @@ fun MarsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = 
         scrollBehavior = scrollBehavior,
         title = {
             Text(
-                text = stringResource(id = R.string.app_name),
-                style = MaterialTheme.typography.headlineSmall
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.headlineSmall,
             )
         },
         modifier = modifier

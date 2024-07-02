@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.modernplayground.R
+import com.example.modernplayground.model.MarsPhoto
 import com.example.modernplayground.ui.theme.MarsPhotosTheme
 
 @Composable
@@ -27,12 +28,11 @@ fun HomeScreen(
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     when (marsUiState) {
+        is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
         is MarsUiState.Success -> ResultScreen(
             marsUiState.photos, modifier = modifier.fillMaxWidth()
         )
-
-        MarsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
-        MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
+        is MarsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
     }
 }
 
@@ -59,12 +59,9 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(R.drawable.ic_connection_error), contentDescription = ""
+            painter = painterResource(id = R.drawable.ic_connection_error), contentDescription = ""
         )
-        Text(
-            text = stringResource(R.string.loading_failed),
-            modifier = Modifier.padding(16.dp)
-        )
+        Text(text = stringResource(R.string.loading_failed), modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -101,6 +98,7 @@ fun ErrorScreenPreview() {
 @Composable
 fun PhotosGridScreenPreview() {
     MarsPhotosTheme {
+        val mockData = List(10) { MarsPhoto("$it", "") }
         ResultScreen(stringResource(R.string.placeholder_success))
     }
 }
