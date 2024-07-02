@@ -13,10 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.modernplayground.R
 import com.example.modernplayground.model.MarsPhoto
 import com.example.modernplayground.ui.theme.MarsPhotosTheme
@@ -29,11 +33,29 @@ fun HomeScreen(
 ) {
     when (marsUiState) {
         is MarsUiState.Loading -> LoadingScreen(modifier = modifier.fillMaxSize())
-        is MarsUiState.Success -> ResultScreen(
-            marsUiState.photos, modifier = modifier.fillMaxWidth()
-        )
+        is MarsUiState.Success -> MarsPhotoCard(photo = marsUiState.photos, modifier.fillMaxSize())
         is MarsUiState.Error -> ErrorScreen(modifier = modifier.fillMaxSize())
     }
+}
+
+@Composable
+fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier = Modifier) {
+    // The model argument can either be the ImageRequest.data value or the ImageRequest itself.
+    // AsyncImage supports the same arguments as the standard Image composable. Additionally,
+    // it supports setting placeholder/error/fallback painters and onLoading/onSuccess/onError
+    // callbacks. The preceding example code loads the image with a circle crop and crossfade
+    // and sets a placeholder.
+    AsyncImage(
+        model = ImageRequest.Builder(context = LocalContext.current)
+            .data(photo.imgSrc)
+            .crossfade(true)
+            .build(),
+        error = painterResource(R.drawable.ic_broken_image),
+        placeholder = painterResource(R.drawable.loading_img),
+        contentScale = ContentScale.Crop,
+        contentDescription = stringResource(R.string.mars_photo),
+        modifier = modifier
+    )
 }
 
 /**
